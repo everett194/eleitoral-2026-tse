@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Missões 2026</title>
+<style>
+:root{
+  --bg:#f6f7f9;--surface:#ffffff;--surface2:#eef0f4;--ink:#1c2230;--muted:#5d6678;--line:#dde1e8;
+  --accent:#2f5d7c;--accent-ink:#ffffff;--warn:#b5651d;--bad:#b3261e;--ok:#2e6b4f;--chip:#e6ebf2;
+  --radius:10px;--shadow:0 1px 2px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151b;--surface:#1a1f28;--surface2:#222937;--ink:#e6e9ef;--muted:#9aa3b5;--line:#2c3443;
+    --accent:#7fb0d3;--accent-ink:#0f1720;--warn:#e0a060;--bad:#ef8a83;--ok:#7cc4a0;--chip:#263043;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151b;--surface:#1a1f28;--surface2:#222937;--ink:#e6e9ef;--muted:#9aa3b5;--line:#2c3443;
+  --accent:#7fb0d3;--accent-ink:#0f1720;--warn:#e0a060;--bad:#ef8a83;--ok:#7cc4a0;--chip:#263043;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.brand{font-weight:700;letter-spacing:.2px;margin-right:auto}
+.brand small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+nav.tabs{max-width:1100px;margin:0 auto;padding:0 8px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:none;padding:10px 12px;min-height:44px;border-bottom:2px solid transparent;color:var(--muted);white-space:nowrap;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+main{max-width:1100px;margin:0 auto;padding:16px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.btn:hover{background:var(--surface2)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.small{min-height:32px;padding:4px 10px;font-size:13px}
+.btn.danger{color:var(--bad)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:12px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.stat b{display:block;font-size:26px;line-height:1.1}
+.stat span{color:var(--muted);font-size:13px}
+h2{font-size:18px;margin:18px 0 10px}
+h3{font-size:15px;margin:0 0 8px}
+.muted{color:var(--muted)}
+.chip{display:inline-block;background:var(--chip);border-radius:999px;padding:1px 8px;font-size:12px;margin:1px 2px 1px 0}
+.chip.warn{background:transparent;border:1px solid var(--warn);color:var(--warn)}
+.chip.bad{background:transparent;border:1px solid var(--bad);color:var(--bad)}
+.chip.ok{background:transparent;border:1px solid var(--ok);color:var(--ok)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar input,.toolbar select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;min-height:40px}
+.toolbar input[type=search]{flex:1;min-width:160px}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}
+th{background:var(--surface2);font-weight:600;cursor:pointer;user-select:none;white-space:nowrap}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--surface2)}
+.tablewrap{overflow-x:auto}
+@media (max-width:700px){
+  table.resp thead{display:none}
+  table.resp,table.resp tbody,table.resp tr,table.resp td{display:block;width:100%}
+  table.resp tr{border-bottom:1px solid var(--line);padding:6px 0}
+  table.resp td{border:0;padding:3px 12px}
+  table.resp td[data-l]:before{content:attr(data-l) ": ";color:var(--muted);font-size:12px}
+}
+.kanban{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:10px;overflow-x:auto;padding-bottom:6px}
+.col{background:var(--surface2);border-radius:var(--radius);padding:8px;min-height:120px}
+.col h3{display:flex;justify-content:space-between;padding:4px 4px 8px}
+.task{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px;margin-bottom:8px;cursor:pointer}
+.task.overdue{border-left:4px solid var(--bad)}
+.task.soon{border-left:4px solid var(--warn)}
+.task .meta{font-size:12px;color:var(--muted);margin-top:4px}
+.task .move{display:flex;gap:4px;margin-top:6px}
+.quick{display:flex;gap:8px;margin-bottom:12px}
+.quick input{flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--surface);min-height:44px}
+.timeline{border-left:2px solid var(--line);margin-left:8px;padding-left:16px}
+.ev{position:relative;margin-bottom:14px}
+.ev:before{content:"";position:absolute;left:-23px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--accent)}
+.ev.past:before{background:var(--accent)}
+.ev .d{font-weight:600}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40;display:none}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--surface);z-index:41;overflow-y:auto;padding:16px;transform:translateX(100%);transition:transform .2s}
+.drawer.open{transform:none}
+.drawer-bg.open{display:block}
+.form{display:grid;gap:10px}
+.form label{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.form input,.form select,.form textarea{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px;color:var(--ink);font-size:15px;min-height:42px}
+.form textarea{min-height:80px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:500px){.row2{grid-template-columns:1fr}}
+.actions{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;margin-top:8px}
+.notice{background:var(--surface2);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--muted);margin:10px 0}
+.snack{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:8px;display:none;gap:12px;align-items:center;z-index:60;max-width:calc(100% - 32px)}
+.snack.show{display:flex}
+.snack button{background:none;border:0;color:var(--bg);font-weight:700;text-decoration:underline;cursor:pointer}
+.lock{position:fixed;inset:0;background:var(--bg);z-index:80;display:none;align-items:center;justify-content:center;padding:16px}
+.lock.show{display:flex}
+.lock .card{width:min(380px,100%)}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+.ref h3{margin-bottom:6px}
+.ref ul{margin:6px 0 6px 18px;padding:0}
+.ref .src{font-size:12px;color:var(--muted)}
+a{color:var(--accent)}
+.countdown{font-size:22px;font-weight:700}
+.list li{margin-bottom:4px}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand"><span data-t="appName"></span><small data-t="appSub"></small></div>
+    <button class="btn small" id="langBtn" aria-label="Language">EN</button>
+    <button class="btn small" id="themeBtn" data-t="theme"></button>
+    <button class="btn small" id="settingsBtn" data-t="settings"></button>
+  </div>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+</header>
+<main id="main"></main>
+
+<div class="drawer-bg" id="drawerBg"></div>
+<aside class="drawer" id="drawer" aria-modal="true" role="dialog"></aside>
+<div class="snack" id="snack"><span id="snackMsg"></span><button id="snackUndo"></button></div>
+
+<div class="lock" id="lock">
+  <div class="card">
+    <h3 data-t="locked"></h3>
+    <p class="muted" data-t="lockedHelp"></p>
+    <div class="form">
+      <input type="password" id="lockPass" autocomplete="current-password">
+      <button class="btn primary" id="unlockBtn" data-t="unlock"></button>
+      <span class="muted" id="lockErr"></span>
+    </div>
+  </div>
+</div>
+<input type="file" id="importFile" accept="application/json,.json" hidden>
+
+<script>
+"use strict";
+/* ================= i18n ================= */
+const I18N = {
+  pt:{
+    appName:"Missões 2026 — Tracker",theme:"Tema",appSub:"Uso pessoal · dados só neste navegador",settings:"Ajustes",
+    tabDash:"Painel",tabMissions:"Missões",tabBacklog:"Pendências",tabTimeline:"Linha do tempo",tabSources:"Fontes",tabRef:"Referência",
+    countdownTitle:"2º turno — 25/10/2026, 08h (Brasília)",countdownDone:"Votação iniciada/encerrada",days:"d",hours:"h",mins:"min",
+    missionsTotal:"Missões",byType:"Por tipo",byStatus:"Por credenciamento",overdue:"Atrasadas",dueBefore:"Vencem até 25/10",
+    missingInfo:"Missões com dados faltando",reportsPending:"Relatórios finais pendentes",next7:"Próximos 7 dias",nothing:"Nada por aqui.",
+    search:"Buscar…",allTypes:"Todos os tipos",allStatus:"Todas as situações",addMission:"+ Missão",
+    name:"Nome",acronym:"Sigla",type:"Tipo",head:"Chefe da missão",size:"Tamanho",states:"Estados/regiões",status:"Credenciamento",
+    agreement:"Acordo de procedimentos",rounds:"Turnos",prelim:"Relatório preliminar (data)",prelimUrl:"Relatório preliminar (link)",
+    finalStatus:"Relatório final",prior:"Missões anteriores ao Brasil (anos)",focus:"Temas (separados por vírgula)",notes:"Notas",
+    sourcesField:"Fontes (uma por linha: URL | data de acesso)",updated:"Atualizado",nameEn:"Nome (EN)",namePt:"Nome (PT)",
+    save:"Salvar",cancel:"Cancelar",del:"Excluir",missing:"faltando",
+    tIntl:"MOE Internacional",tNat:"MOE Nacional",tGuest:"Convidados Internacionais",tEmb:"Embaixada/Protocolo",tOther:"Outro",
+    sReq:"Solicitado",sAcc:"Credenciado",sDen:"Negado",sRev:"Em análise",
+    fNone:"Não iniciado",fExp:"Previsto",fRec:"Recebido",
+    quickPh:"Ex.: P1 Confirmar crachás OEA até 22/10",add:"Adicionar",
+    cTodo:"A fazer",cDoing:"Fazendo",cWait:"Aguardando",cDone:"Feito",viewBoard:"Quadro",viewList:"Lista",
+    title:"Título",mission:"Missão",priority:"Prioridade",due:"Prazo",owner:"Responsável",none:"—",addTask:"+ Tarefa",
+    date:"Data",event:"Evento",addEvent:"+ Evento",label:"Rótulo",url:"URL",tags:"Tags",addSource:"+ Fonte",
+    deleted:"Excluído.",undo:"Desfazer",saved:"Salvo.",
+    exportJ:"Exportar JSON",importJ:"Importar JSON",imported:"Importado.",importErr:"Arquivo inválido.",
+    privacy:"Não listado ≠ privado. Não armazene informações não públicas do TSE nem dados pessoais (passaportes, telefones, endereços, documentos de viagem).",
+    passTitle:"Senha (criptografia local)",passHelp:"Criptografa os dados neste navegador (AES-GCM). Se esquecer a senha, os dados não podem ser recuperados — exporte um backup antes.",
+    setPass:"Definir/alterar senha",removePass:"Remover senha",lockNow:"Bloquear agora",passSet:"Senha definida.",passRemoved:"Senha removida.",
+    locked:"Bloqueado",lockedHelp:"Digite a senha para abrir os dados.",unlock:"Desbloquear",wrongPass:"Senha incorreta.",
+    resetSeed:"Restaurar dados iniciais",resetConfirm:"Apagar tudo e restaurar os dados iniciais?",confirmDel:"Excluir este item?",
+    storageWarn:"O armazenamento do navegador não está disponível (janela privada?). Os dados valem só nesta sessão — exporte antes de fechar.",
+    emptyMissions:"Nenhuma missão. Use “+ Missão”.",emptyTasks:"Sem tarefas. Digite acima, ex.: “P2 Enviar programação Uniore até 23/10”.",
+    refIntro:"Fatos de referência do “Practical Guide — 2026 Elections” (DAIN/TSE). Confira a fonte antes de citar.",
+    seedNote:"Dados iniciais públicos (19/10/2026). Itens [confirmar] precisam de checagem.",
+    passPrompt:"Nova senha (mín. 8 caracteres):",passShort:"Senha muito curta."
+  },
+  en:{
+    appName:"Missions 2026 — Tracker",theme:"Theme",appSub:"Personal use · data stays in this browser",settings:"Settings",
+    tabDash:"Dashboard",tabMissions:"Missions",tabBacklog:"Backlog",tabTimeline:"Timeline",tabSources:"Sources",tabRef:"Reference",
+    countdownTitle:"Runoff — 25 Oct 2026, 08:00 (Brasília)",countdownDone:"Voting started/ended",days:"d",hours:"h",mins:"min",
+    missionsTotal:"Missions",byType:"By type",byStatus:"By accreditation",overdue:"Overdue",dueBefore:"Due by 25/10",
+    missingInfo:"Missions with missing info",reportsPending:"Final reports pending",next7:"Next 7 days",nothing:"Nothing here.",
+    search:"Search…",allTypes:"All types",allStatus:"All statuses",addMission:"+ Mission",
+    name:"Name",acronym:"Acronym",type:"Type",head:"Head of mission",size:"Size",states:"States/regions",status:"Accreditation",
+    agreement:"Procedures agreement",rounds:"Rounds",prelim:"Preliminary report (date)",prelimUrl:"Preliminary report (link)",
+    finalStatus:"Final report",prior:"Prior missions to Brazil (years)",focus:"Focus areas (comma-separated)",notes:"Notes",
+    sourcesField:"Sources (one per line: URL | date accessed)",updated:"Updated",nameEn:"Name (EN)",namePt:"Name (PT)",
+    save:"Save",cancel:"Cancel",del:"Delete",missing:"missing",
+    tIntl:"International EOM",tNat:"National EOM",tGuest:"International Guests",tEmb:"Embassy/Protocol",tOther:"Other",
+    sReq:"Requested",sAcc:"Accredited",sDen:"Denied",sRev:"Under review",
+    fNone:"Not started",fExp:"Expected",fRec:"Received",
+    quickPh:"e.g. P1 Confirm OAS badges by 22/10",add:"Add",
+    cTodo:"To do",cDoing:"Doing",cWait:"Waiting",cDone:"Done",viewBoard:"Board",viewList:"List",
+    title:"Title",mission:"Mission",priority:"Priority",due:"Due",owner:"Owner",none:"—",addTask:"+ Task",
+    date:"Date",event:"Event",addEvent:"+ Event",label:"Label",url:"URL",tags:"Tags",addSource:"+ Source",
+    deleted:"Deleted.",undo:"Undo",saved:"Saved.",
+    exportJ:"Export JSON",importJ:"Import JSON",imported:"Imported.",importErr:"Invalid file.",
+    privacy:"Unlisted ≠ private. Do not store non-public TSE information or personal data (passports, phones, addresses, travel documents).",
+    passTitle:"Passphrase (local encryption)",passHelp:"Encrypts data in this browser (AES-GCM). If you forget it, the data cannot be recovered — export a backup first.",
+    setPass:"Set/change passphrase",removePass:"Remove passphrase",lockNow:"Lock now",passSet:"Passphrase set.",passRemoved:"Passphrase removed.",
+    locked:"Locked",lockedHelp:"Enter the passphrase to open your data.",unlock:"Unlock",wrongPass:"Wrong passphrase.",
+    resetSeed:"Reset to seed data",resetConfirm:"Erase everything and restore the seed data?",confirmDel:"Delete this item?",
+    storageWarn:"Browser storage isn't available (private window?). Data lasts this session only — export before closing.",
+    emptyMissions:"No missions. Use “+ Mission”.",emptyTasks:"No tasks. Type above, e.g. “P2 Send Uniore schedule by 23/10”.",
+    refIntro:"Reference facts from the “Practical Guide — 2026 Elections” (DAIN/TSE). Check the source before quoting.",
+    seedNote:"Public seed data (19 Oct 2026). Items marked [confirm] need checking.",
+    passPrompt:"New passphrase (min. 8 characters):",passShort:"Passphrase too short."
+  }
+};
+let LANG = "pt";
+const t = k => (I18N[LANG] && I18N[LANG][k]) || I18N.pt[k] || k;
+
+/* ================= helpers ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = () => Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+const todayISO = () => { const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
+const fmtDate = iso => { if(!iso||!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return ""; const [y,m,d]=iso.split("-"); return `${d}/${m}/${y}`; };
+const daysBetween = (a,b) => Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/86400000);
+const RUNOFF_ISO = "2026-10-25";
+const RUNOFF_START = new Date("2026-10-25T08:00:00-03:00");
+const safeUrl = u => /^https?:\/\//i.test(u||"") ? u : "";
+
+const TYPES = {intl:"tIntl",nat:"tNat",guest:"tGuest",emb:"tEmb",other:"tOther"};
+const STATUSES = {req:"sReq",acc:"sAcc",den:"sDen",rev:"sRev"};
+const FINALS = {none:"fNone",exp:"fExp",rec:"fRec"};
+const COLS = {todo:"cTodo",doing:"cDoing",wait:"cWait",done:"cDone"};
+
+/* ================= seed data ================= */
+const SRC = {
+  tseIntl:"https://www.tse.jus.br/institucional/sobre-o-tse/internacional",
+  tseMissoes:"https://www.tse.jus.br/comunicacao/noticias/2026/Setembro/tse-recebe-missoes-internacionais-e-formaliza-atuacao-de-observadores-nas-eleicoes-2026",
+  tseOea:"https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/oea-envia-maior-missao-de-observacao-eleitoral-ao-brasil",
+  tseLista:"https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/lista-de-pessoas-observadoras-internacionais",
+  tseMoes1t:"https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/missoes-de-observacao-eleitoral-destacam-transparencia-e-organizacao-das-eleicoes-2026",
+  tseRelatorios:"https://www.tse.jus.br/comunicacao/noticias/arquivos/moes-relatorios-compilados-7-10.26",
+  istoe7:"https://istoe.com.br/sete-missoes-vao-observar-segundo-turno-no-brasil",
+  metropoles:"https://www.metropoles.com/mundo/tse-rejeita-grupo-espanha-eleicoes-2026",
+  ain:"https://international.tse.jus.br/en/assuntos-internacionais/international-affairs-and-ceremonial-advisory-office"
+};
+const ACC = "2026-10-19";
+const src = (...urls) => urls.map(u=>({url:u,accessed:ACC}));
+function M(o){ return Object.assign({id:uid(),name_pt:"",name_en:"",acronym:"",type:"intl",head:"",size:"",states:"",status:"acc",
+  agreement:"",rounds:["1","2"],prelim_date:"",prelim_url:"",final_status:"exp",prior:"",focus:"",notes:"",sources:[],updated:ACC},o); }
+
+function seed(){
+  return {
+    version:1,
+    missions:[
+      M({name_pt:"União Europeia",name_en:"European Union",acronym:"UE/EU",head:"Tânia Marques",size:"5 na lista TSE (23/09) [confirmar total]",agreement:"2026-09-01",
+        focus:"redes sociais e desinformação, tecnologia e administração eleitoral, legislação e contencioso, partidos e financiamento",sources:src(SRC.tseMissoes,SRC.tseLista,SRC.istoe7)}),
+      M({name_pt:"Organização dos Estados Americanos",name_en:"Organization of American States",acronym:"OEA/OAS",head:"José Miguel Insulza",size:"~91 observadores",
+        states:"DF + 20 estados",prior:"2018, 2020, 2022, 2024",prelim_date:"2026-10-06",prelim_url:SRC.tseRelatorios,
+        notes:"5ª missão da OEA no Brasil. Relatório preliminar (06/10): 1º turno pacífico; alertou para desinformação e ativismo político estrangeiro; retorna para o 2º turno.",
+        sources:src(SRC.tseOea,SRC.tseRelatorios,SRC.istoe7)}),
+      M({name_pt:"Parlamento do Mercosul",name_en:"Mercosur Parliament",acronym:"Parlasul",head:"Raúl Germán Bittel",size:"6 na lista TSE (23/09)",sources:src(SRC.tseLista,SRC.istoe7)}),
+      M({name_pt:"Liga dos Estados Árabes",name_en:"League of Arab States",acronym:"LEA",head:"Ibrahim Mohamed Khalil Alzeben",size:"3 na lista TSE (23/09)",agreement:"2026-09-01",sources:src(SRC.tseMissoes,SRC.tseLista,SRC.istoe7)}),
+      M({name_pt:"Rede dos Órgãos Jurisdicionais e de Administração Eleitoral da CPLP",name_en:"ROJAE-CPLP network",acronym:"Rojae-CPLP",head:"João Carlos Pires Trindade",size:"6 na lista TSE (23/09)",
+        notes:"Concluiu que o 1º turno foi organizado e conforme a legislação e padrões internacionais.",sources:src(SRC.tseLista,SRC.tseMoes1t,SRC.istoe7)}),
+      M({name_pt:"União Interamericana de Organismos Eleitorais",name_en:"Inter-American Union of Electoral Bodies",acronym:"Uniore",head:"Hernán Penagos Giraldo",size:"5 na lista TSE (23/09)",agreement:"2026-09-01",sources:src(SRC.tseMissoes,SRC.tseLista,SRC.istoe7)}),
+      M({name_pt:"Centro Carter",name_en:"The Carter Center",acronym:"Carter",head:"",notes:"Chefe da missão [confirmar].",sources:src(SRC.istoe7)}),
+      M({name_pt:"Transparência Eleitoral Brasil",name_en:"Transparência Eleitoral Brasil",acronym:"TEB",type:"nat",rounds:["1"],notes:"Participação no 2º turno [confirmar].",sources:src(SRC.tseMoes1t)}),
+      M({name_pt:"Pontifícia Universidade Católica de São Paulo",name_en:"PUC-SP",acronym:"PUC-SP",type:"nat",rounds:["1"],notes:"Participação no 2º turno [confirmar].",sources:src(SRC.tseMoes1t)}),
+      M({name_pt:"Universidade Federal da Integração Latino-Americana",name_en:"UNILA",acronym:"UNILA",type:"nat",rounds:["1"],notes:"Participação no 2º turno [confirmar].",sources:src(SRC.tseMoes1t)}),
+      M({name_pt:"Núcleo de Estudos e Pesquisa em Direito Internacional (Uerj)",name_en:"Nepedi/UERJ",acronym:"Nepedi/Uerj",type:"nat",rounds:["1"],notes:"Participação no 2º turno [confirmar].",sources:src(SRC.tseMoes1t)}),
+      M({name_pt:"Programa de Convidados Internacionais",name_en:"International Guests Program",acronym:"PCI",type:"guest",size:"62 representantes, 26 países (1º turno)",rounds:["1"],final_status:"none",
+        notes:"Institucional; não se confunde com as MOEs. Seminário aberto em 02/10 pela diretora de Assuntos Internacionais, Renata Gil.",sources:src(SRC.istoe7,SRC.tseIntl)}),
+      M({name_pt:"Eurolat Global Democracy Forum",name_en:"Eurolat Global Democracy Forum",acronym:"Eurolat",status:"den",rounds:[],final_status:"none",
+        notes:"Credenciamento negado: TSE entendeu que não se enquadra como organização apta.",sources:src(SRC.metropoles)})
+    ],
+    tasks:[
+      {id:uid(),title:"Confirmar chefe da missão do Centro Carter",mission:"",priority:"P1",due:"2026-10-22",owner:"",status:"todo",notes:""},
+      {id:uid(),title:"Conferir lista completa da Portaria TSE 453/2026 (missões nacionais)",mission:"",priority:"P2",due:"2026-10-23",owner:"",status:"todo",notes:""},
+      {id:uid(),title:"Confirmar quais estados têm 2º turno para governador",mission:"",priority:"P2",due:"2026-10-21",owner:"",status:"todo",notes:""}
+    ],
+    timeline:[
+      {id:uid(),date:"2026-09-01",text:"Acordos de procedimentos assinados (UE, Liga Árabe, Uniore)"},
+      {id:uid(),date:"2026-09-23",text:"TSE atualiza lista de observadores internacionais"},
+      {id:uid(),date:"2026-10-01",text:"OEA recebida pelo presidente do TSE"},
+      {id:uid(),date:"2026-10-02",text:"Seminário do Programa de Convidados Internacionais"},
+      {id:uid(),date:"2026-10-04",text:"1º turno"},
+      {id:uid(),date:"2026-10-06",text:"Relatório preliminar da OEA"},
+      {id:uid(),date:"2026-10-14",text:"TSE confirma 7 missões internacionais no 2º turno"},
+      {id:uid(),date:"2026-10-25",text:"2º turno (08h–17h, Brasília)"},
+      {id:uid(),date:"2026-10-27",text:"Declarações preliminares do 2º turno esperadas [estimativa]"}
+    ],
+    sources:[
+      {id:uid(),label:"Assessoria Internacional TSE (ain@tse.jus.br)",url:SRC.ain,tags:"oficial"},
+      {id:uid(),label:"TSE — Internacional / Missões 2026",url:SRC.tseIntl,tags:"oficial, missões"},
+      {id:uid(),label:"TSE — Lista de observadores internacionais",url:SRC.tseLista,tags:"oficial, missões"},
+      {id:uid(),label:"TSE — OEA envia maior MOE",url:SRC.tseOea,tags:"oficial, OEA"},
+      {id:uid(),label:"TSE — Relatórios das MOEs (1º turno)",url:SRC.tseRelatorios,tags:"oficial, relatórios"},
+      {id:uid(),label:"Practical Guide — 2026 Elections (DAIN/TSE) — PDF recebido",url:"",tags:"oficial, referência"},
+      {id:uid(),label:"Resolução TSE nº 23.678/2021 (MOEs)",url:"",tags:"norma"}
+    ]
+  };
+}
+
+/* ================= reference cards (from DAIN Practical Guide 2026) ================= */
+const REF = [
+  {pt:{h:"Dia da votação",li:["Seções instaladas a partir das 7h","Antes de votar: impressão da zerésima (urna com zero votos), assinada e afixada","Votação das 8h às 17h (Brasília); quem estiver na fila às 17h vota","Ao final: Boletim de Urna (BU) impresso, uma via afixada na porta da seção","BU também disponível no portal do TSE e no app Boletim na Mão (QR code)"]},
+   en:{h:"Election day",li:["Polling stations set up from 7am","Before voting: Zero Report (zerésima) printed, signed and posted","Voting 8am–5pm Brasília time; anyone in line at 5pm votes","At close: Polling Station Report (BU) printed, one copy posted on the door","BU also on the TSE portal and the Boletim na Mão app (QR code)"]},s:"§8"},
+  {pt:{h:"Segurança da urna",li:["Sem hardware ou software de rede: opera totalmente offline","Hardware criptográfico só executa software oficial assinado pelo TSE","Sistemas assinados e lacrados em cerimônia pública; hashes publicados","Teste de Integridade no dia, com urnas sorteadas na véspera, filmado","Teste Público de Segurança (TPS): 8 edições entre 2009 e 2025"]},
+   en:{h:"Voting machine security",li:["No network hardware or software: fully offline","Cryptographic hardware runs only TSE-signed official software","Systems signed and sealed in a public ceremony; hashes published","Election-day Integrity Test on machines drawn the day before, filmed","Public Security Test (TPS): 8 editions between 2009 and 2025"]},s:"§7"},
+  {pt:{h:"Arquivos e auditoria",li:["Arquivos da urna: BU, RDV (Registro Digital do Voto), faltosos, justificativas, log — todos assinados digitalmente","RDV guarda votos em ordem lexicográfica: permite recontagem sem identificar o eleitor","Partidos podem obter cópias do RDV de quantas urnas quiserem","Voto impresso declarado inconstitucional pelo STF (ADI 5.889, 2020)"]},
+   en:{h:"Files and audit",li:["Machine files: BU, RDV (Digital Vote Record), absentees, justifications, log — all digitally signed","RDV stores votes in lexicographic order: allows recounts without identifying voters","Parties may obtain RDV copies from as many machines as they want","Printed vote ruled unconstitutional by the Supreme Court (ADI 5,889, 2020)"]},s:"§7"},
+  {pt:{h:"Sistemas e aplicativos",li:["Gedai-UE: gera mídias da urna","Sistot: recebe e totaliza resultados","JE-Connect: transmite o BU por canal privado e seguro","Uenux: sistema operacional Linux da urna","Apps: e-Título, Pardal (denúncias), Resultados, Boletim na Mão, Mesário"]},
+   en:{h:"Systems and apps",li:["Gedai-UE: generates voting-machine media","Sistot: receives and tallies results","JE-Connect: transmits the BU over a private secure channel","Uenux: the machine's Linux operating system","Apps: e-Título, Pardal (reports), Resultados, Boletim na Mão, Mesário"]},s:"§5"},
+  {pt:{h:"Eleitorado 2026",li:["~158,7 milhões de eleitores; 52,81% mulheres","5.571 municípios + 186 cidades no exterior","517.206 seções em 2.641 zonas eleitorais","~919 mil eleitores aptos no exterior — votam só para Presidente/Vice","Voto facultativo: 16–17 anos, 70+ e analfabetos"]},
+   en:{h:"2026 electorate",li:["~158.7 million voters; 52.81% women","5,571 municipalities + 186 cities abroad","517,206 polling stations in 2,641 electoral zones","~919k eligible voters abroad — vote only for President/VP","Optional voting: ages 16–17, 70+, and illiterate voters"]},s:"§1"},
+  {pt:{h:"Desinformação",li:["Programa Permanente de Enfrentamento à Desinformação (PPED), em rede com plataformas e provedores de IA","Siade: canal anônimo de alertas sobre desinformação eleitoral","Página Fato ou Boato; Tira-Dúvidas no WhatsApp; Portal de Dados Abertos","Conteúdo de campanha gerado/manipulado por IA deve ter aviso explícito"]},
+   en:{h:"Disinformation",li:["Permanent Program for Countering Disinformation (PPED), networked with platforms and AI providers","Siade: anonymous channel for electoral disinformation alerts","Fato ou Boato page; WhatsApp Q&A bot; Open Data Portal","AI-generated/manipulated campaign content must carry an explicit notice"]},s:"§6, §8"},
+  {pt:{h:"Missões de observação",li:["OEA observa desde 2018 (também 2020, 2022, 2024)","Resolução TSE nº 23.678/2021 regulamenta MOEs nacionais e internacionais","2022: 8 instituições nacionais + 8 internacionais","Objetivos: verificar cumprimento das regras, controle social, imparcialidade e eficácia da organização"]},
+   en:{h:"Observation missions",li:["OAS has observed since 2018 (also 2020, 2022, 2024)","TSE Resolution 23,678/2021 governs national and international EOMs","2022: 8 national + 8 international institutions","Aims: check rule compliance, social oversight, impartiality and effectiveness of administration"]},s:"§10"},
+  {pt:{h:"TSE e Justiça Eleitoral",li:["Presidente: ministro Nunes Marques; Vice: ministro André Mendonça","Composição: 3 ministros do STF, 2 do STJ, 2 advogados","TREs em cada capital e no DF; >2.641 juízes eleitorais","Presidente/Vice são proclamados pelo TSE; demais cargos pelos TREs"]},
+   en:{h:"TSE and Electoral Justice",li:["President: Justice Nunes Marques; VP: Justice André Mendonça","Composition: 3 STF justices, 2 STJ justices, 2 attorneys","Regional courts (TREs) in each capital and DF; >2,641 electoral judges","TSE proclaims President/VP; TREs proclaim other offices"]},s:"§4, §8"}
+];
+
+/* ================= storage & crypto ================= */
+const KEY = "moe26-tracker";
+let STATE = null, PASSKEY = null, PASSSALT = null, STORAGE_OK = true;
+const enc = new TextEncoder(), dec = new TextDecoder();
+const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const unb64 = s => Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function deriveKey(pass,salt){
+  const base = await crypto.subtle.importKey("raw",enc.encode(pass),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:250000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+}
+async function encryptObj(obj){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({name:"AES-GCM",iv},PASSKEY,enc.encode(JSON.stringify(obj)));
+  return {enc:true,salt:b64(PASSSALT),iv:b64(iv),ct:b64(ct)};
+}
+async function decryptBlob(blob,pass){
+  const salt = unb64(blob.salt); const key = await deriveKey(pass,salt);
+  const pt = await crypto.subtle.decrypt({name:"AES-GCM",iv:unb64(blob.iv)},key,unb64(blob.ct));
+  PASSKEY = key; PASSSALT = salt;
+  return JSON.parse(dec.decode(pt));
+}
+function rawGet(k){ try{ return localStorage.getItem(k); }catch(e){ STORAGE_OK=false; return null; } }
+function rawSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ STORAGE_OK=false; return false; } }
+let saveTimer=null;
+function save(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveNow,150); }
+async function saveNow(){
+  if(!STATE) return;
+  const payload = PASSKEY ? await encryptObj(STATE) : STATE;
+  rawSet(KEY,JSON.stringify(payload));
+}
+function loadPrefs(){
+  try{ const p=JSON.parse(rawGet(KEY+"-prefs")||"{}"); if(p.lang) LANG=p.lang; if(p.theme) document.documentElement.dataset.theme=p.theme; if(p.view) VIEW.backlog=p.view; }catch(e){}
+}
+function savePrefs(){ rawSet(KEY+"-prefs",JSON.stringify({lang:LANG,theme:document.documentElement.dataset.theme||"",view:VIEW.backlog})); }
+
+/* ================= UI state ================= */
+const VIEW = {tab:"dash",q:"",ftype:"",fstatus:"",sort:"name",dir:1,backlog:"board"};
+const TABS = [["dash","tabDash"],["missions","tabMissions"],["backlog","tabBacklog"],["timeline","tabTimeline"],["sources","tabSources"],["ref","tabRef"]];
+
+function applyStatic(){
+  document.documentElement.lang = LANG==="pt"?"pt-BR":"en";
+  document.querySelectorAll("[data-t]").forEach(el=>{ el.textContent=t(el.dataset.t); });
+  $("#langBtn").textContent = LANG==="pt"?"EN":"PT";
+  $("#lockPass").placeholder = "••••••••";
+  $("#tabs").innerHTML = TABS.map(([id,k])=>`<button class="tab" role="tab" aria-selected="${VIEW.tab===id}" data-tab="${id}">${t(k)}</button>`).join("");
+}
+function render(){
+  applyStatic();
+  const r = {dash:renderDash,missions:renderMissions,backlog:renderBacklog,timeline:renderTimeline,sources:renderSources,ref:renderRef}[VIEW.tab];
+  $("#main").innerHTML = (STORAGE_OK?"":`<div class="notice">${esc(t("storageWarn"))}</div>`) + r();
+}
+const missionName = m => LANG==="en" ? (m.name_en||m.name_pt) : (m.name_pt||m.name_en);
+const missionById = id => STATE.missions.find(m=>m.id===id);
+function missingFields(m){
+  if(m.status==="den") return [];
+  const out=[];
+  if(!m.head && m.type!=="guest") out.push(t("head"));
+  if(!m.size) out.push(t("size"));
+  if(!m.sources||!m.sources.length) out.push(t("sourcesField").split(" (")[0]);
+  if(m.type==="intl" && !m.agreement) out.push(t("agreement"));
+  return out;
+}
+
+/* ---------- Dashboard ---------- */
+function countdownText(){
+  const ms = RUNOFF_START - new Date();
+  if(ms<=0) return t("countdownDone");
+  const d=Math.floor(ms/86400000), h=Math.floor(ms%86400000/3600000), mi=Math.floor(ms%3600000/60000);
+  return `${d}${t("days")} ${h}${t("hours")} ${mi}${t("mins")}`;
+}
+function renderDash(){
+  const today = todayISO();
+  const open = STATE.tasks.filter(x=>x.status!=="done");
+  const overdue = open.filter(x=>x.due && x.due<today);
+  const before = open.filter(x=>x.due && x.due>=today && x.due<=RUNOFF_ISO);
+  const active = STATE.missions.filter(m=>m.status!=="den");
+  const missing = active.filter(m=>missingFields(m).length);
+  const pend = STATE.missions.filter(m=>m.final_status==="exp");
+  const next7 = STATE.timeline.filter(e=>e.date>=today && daysBetween(today,e.date)<=7).sort((a,b)=>a.date.localeCompare(b.date));
+  const count = (key,map)=>Object.keys(map).map(k=>{const n=STATE.missions.filter(m=>m[key]===k).length; return n?`<span class="chip">${esc(t(map[k]))}: ${n}</span>`:"";}).join("");
+  const tlist = arr => arr.length ? `<ul class="list">${arr.map(x=>`<li><a href="#" data-open-task="${x.id}">${esc(x.title)}</a> <span class="muted">· ${fmtDate(x.due)}</span></li>`).join("")}</ul>` : `<p class="muted">${t("nothing")}</p>`;
+  return `
+  <div class="grid g4">
+    <div class="card stat" style="grid-column:span 2"><span>${t("countdownTitle")}</span><div class="countdown" id="cd">${countdownText()}</div></div>
+    <div class="card stat"><b>${STATE.missions.length}</b><span>${t("missionsTotal")}</span></div>
+    <div class="card stat"><b style="color:${overdue.length?"var(--bad)":"inherit"}">${overdue.length}</b><span>${t("overdue")}</span></div>
+    <div class="card stat"><b>${before.length}</b><span>${t("dueBefore")}</span></div>
+  </div>
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card"><h3>${t("byType")}</h3>${count("type",TYPES)}<h3 style="margin-top:10px">${t("byStatus")}</h3>${count("status",STATUSES)}</div>
+    <div class="card"><h3>${t("next7")}</h3>${next7.length?`<ul class="list">${next7.map(e=>`<li><b>${fmtDate(e.date)}</b> — ${esc(e.text)}</li>`).join("")}</ul>`:`<p class="muted">${t("nothing")}</p>`}</div>
+    <div class="card"><h3>${t("overdue")}</h3>${tlist(overdue)}</div>
+    <div class="card"><h3>${t("dueBefore")}</h3>${tlist(before)}</div>
+    <div class="card"><h3>${t("missingInfo")}</h3>${missing.length?`<ul class="list">${missing.map(m=>`<li><a href="#" data-open-mission="${m.id}">${esc(m.acronym||missionName(m))}</a> <span class="muted">— ${esc(missingFields(m).join(", "))}</span></li>`).join("")}</ul>`:`<p class="muted">${t("nothing")}</p>`}</div>
+    <div class="card"><h3>${t("reportsPending")}</h3>${pend.length?pend.map(m=>`<span class="chip">${esc(m.acronym||missionName(m))}</span>`).join(""):`<p class="muted">${t("nothing")}</p>`}</div>
+  </div>
+  <p class="muted" style="font-size:12px;margin-top:14px">${esc(t("seedNote"))}</p>`;
+}
+
+/* ---------- Missions ---------- */
+function renderMissions(){
+  const q = VIEW.q.toLowerCase();
+  let rows = STATE.missions.filter(m=>(!VIEW.ftype||m.type===VIEW.ftype)&&(!VIEW.fstatus||m.status===VIEW.fstatus)&&
+    (!q||[m.name_pt,m.name_en,m.acronym,m.head,m.states,m.notes,m.focus].join(" ").toLowerCase().includes(q)));
+  const key = {name:m=>missionName(m).toLowerCase(),type:m=>t(TYPES[m.type]),head:m=>m.head.toLowerCase(),status:m=>t(STATUSES[m.status]),updated:m=>m.updated}[VIEW.sort];
+  rows.sort((a,b)=>key(a)<key(b)?-VIEW.dir:key(a)>key(b)?VIEW.dir:0);
+  const opt = (map,sel)=>Object.entries(map).map(([k,v])=>`<option value="${k}" ${sel===k?"selected":""}>${esc(t(v))}</option>`).join("");
+  const th = (k,l)=>`<th data-sort="${k}">${t(l)}${VIEW.sort===k?(VIEW.dir>0?" ▲":" ▼"):""}</th>`;
+  return `
+  <div class="toolbar">
+    <input type="search" id="mq" placeholder="${t("search")}" value="${esc(VIEW.q)}">
+    <select id="mtype"><option value="">${t("allTypes")}</option>${opt(TYPES,VIEW.ftype)}</select>
+    <select id="mstatus"><option value="">${t("allStatus")}</option>${opt(STATUSES,VIEW.fstatus)}</select>
+    <button class="btn primary" id="addMission">${t("addMission")}</button>
+  </div>
+  ${rows.length?`<div class="tablewrap"><table class="resp"><thead><tr>${th("name","name")}${th("type","type")}${th("head","head")}${th("status","status")}<th>${t("rounds")}</th>${th("updated","updated")}</tr></thead><tbody>
+  ${rows.map(m=>{const miss=missingFields(m); const stc=m.status==="acc"?"ok":m.status==="den"?"bad":"warn";
+    return `<tr class="row" data-open-mission="${m.id}">
+      <td data-l="${t("name")}"><b>${esc(m.acronym)}</b> ${esc(missionName(m))}${miss.length?` <span class="chip warn" title="${esc(miss.join(", "))}">${miss.length} ${t("missing")}</span>`:""}</td>
+      <td data-l="${t("type")}">${esc(t(TYPES[m.type]))}</td>
+      <td data-l="${t("head")}">${esc(m.head)||'<span class="muted">—</span>'}</td>
+      <td data-l="${t("status")}"><span class="chip ${stc}">${esc(t(STATUSES[m.status]))}</span></td>
+      <td data-l="${t("rounds")}" style="white-space:nowrap">${(m.rounds||[]).map(r=>`<span class="chip">${r}º</span>`).join("")||"—"}</td>
+      <td data-l="${t("updated")}" class="muted">${fmtDate(m.updated)}</td></tr>`;}).join("")}
+  </tbody></table></div>`:`<div class="empty">${t("emptyMissions")}</div>`}`;
+}
+function missionForm(m){
+  const opt=(map,sel)=>Object.entries(map).map(([k,v])=>`<option value="${k}" ${sel===k?"selected":""}>${esc(t(v))}</option>`).join("");
+  const srcText = (m.sources||[]).map(s=>`${s.url}${s.accessed?" | "+fmtDate(s.accessed):""}`).join("\n");
+  const links = (m.sources||[]).filter(s=>safeUrl(s.url)).map(s=>`<li><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.url.replace(/^https?:\/\//,"").slice(0,70))}</a></li>`).join("");
+  return `<h2 style="margin-top:0">${esc(m.acronym||t("addMission"))}</h2>
+  <form class="form" id="mForm">
+    <label>${t("namePt")}<input name="name_pt" value="${esc(m.name_pt)}" required></label>
+    <div class="row2"><label>${t("nameEn")}<input name="name_en" value="${esc(m.name_en)}"></label><label>${t("acronym")}<input name="acronym" value="${esc(m.acronym)}"></label></div>
+    <div class="row2"><label>${t("type")}<select name="type">${opt(TYPES,m.type)}</select></label><label>${t("status")}<select name="status">${opt(STATUSES,m.status)}</select></label></div>
+    <div class="row2"><label>${t("head")}<input name="head" value="${esc(m.head)}"></label><label>${t("size")}<input name="size" value="${esc(m.size)}"></label></div>
+    <label>${t("states")}<input name="states" value="${esc(m.states)}"></label>
+    <div class="row2"><label>${t("agreement")}<input type="date" name="agreement" value="${esc(m.agreement)}"></label>
+      <label>${t("rounds")}<span style="display:flex;gap:14px;align-items:center;min-height:42px">
+        <span><input type="checkbox" name="r1" ${m.rounds?.includes("1")?"checked":""} style="min-height:auto"> 1º</span>
+        <span><input type="checkbox" name="r2" ${m.rounds?.includes("2")?"checked":""} style="min-height:auto"> 2º</span></span></label></div>
+    <div class="row2"><label>${t("prelim")}<input type="date" name="prelim_date" value="${esc(m.prelim_date)}"></label><label>${t("finalStatus")}<select name="final_status">${opt(FINALS,m.final_status)}</select></label></div>
+    <label>${t("prelimUrl")}<input type="url" name="prelim_url" value="${esc(m.prelim_url)}"></label>
+    <label>${t("prior")}<input name="prior" value="${esc(m.prior)}"></label>
+    <label>${t("focus")}<input name="focus" value="${esc(m.focus)}"></label>
+    <label>${t("notes")}<textarea name="notes">${esc(m.notes)}</textarea></label>
+    <label>${t("sourcesField")}<textarea name="sources">${esc(srcText)}</textarea></label>
+    ${links?`<ul class="list" style="font-size:13px;margin:0 0 0 18px;padding:0">${links}</ul>`:""}
+    <div class="notice">${esc(t("privacy"))}</div>
+    <div class="actions"><span><button class="btn primary" type="submit">${t("save")}</button> <button class="btn" type="button" data-close>${t("cancel")}</button></span>
+      ${STATE.missions.includes(m)?`<button class="btn danger" type="button" id="delMission">${t("del")}</button>`:""}</div>
+  </form>`;
+}
+function parseDateLoose(s){
+  s=(s||"").trim(); if(!s) return "";
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const m=s.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/);
+  if(!m) return "";
+  let y=m[3]?+m[3]:2026; if(y<100) y+=2000;
+  const d=+m[1], mo=+m[2]; if(mo<1||mo>12||d<1||d>31) return "";
+  return `${y}-${String(mo).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+}
+function openMission(id){
+  const existing = id && missionById(id);
+  const m = existing || M({status:"rev",rounds:["2"],final_status:"none",updated:todayISO()});
+  openDrawer(missionForm(m));
+  $("#mForm").onsubmit = e=>{
+    e.preventDefault(); const f=new FormData(e.target);
+    ["name_pt","name_en","acronym","type","status","head","size","states","agreement","prelim_date","prelim_url","final_status","prior","focus","notes"].forEach(k=>m[k]=(f.get(k)||"").trim());
+    m.rounds=[f.get("r1")?"1":null,f.get("r2")?"2":null].filter(Boolean);
+    m.sources=(f.get("sources")||"").split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{const [u,a]=l.split("|").map(x=>x.trim()); return {url:u,accessed:parseDateLoose(a)||todayISO()};});
+    m.updated=todayISO();
+    if(!existing) STATE.missions.push(m);
+    save(); closeDrawer(); render(); snack(t("saved"));
+  };
+  const del=$("#delMission"); if(del) del.onclick=()=>{ removeWithUndo("missions",m); closeDrawer(); };
+}
+
+/* ---------- Backlog ---------- */
+function taskClass(x){ const today=todayISO(); if(x.status==="done"||!x.due) return ""; if(x.due<today) return "overdue"; if(x.due<=RUNOFF_ISO) return "soon"; return ""; }
+function taskCard(x){
+  const m=x.mission&&missionById(x.mission);
+  const keys=Object.keys(COLS), i=keys.indexOf(x.status);
+  return `<div class="task ${taskClass(x)}" data-open-task="${x.id}">
+    <div><span class="chip">${esc(x.priority)}</span> ${esc(x.title)}</div>
+    <div class="meta">${x.due?fmtDate(x.due):""}${m?` · ${esc(m.acronym||missionName(m))}`:""}${x.owner?` · ${esc(x.owner)}`:""}</div>
+    <div class="move">${i>0?`<button class="btn small" data-move="${x.id}" data-to="${keys[i-1]}" aria-label="←">←</button>`:""}${i<keys.length-1?`<button class="btn small" data-move="${x.id}" data-to="${keys[i+1]}" aria-label="→">→</button>`:""}</div>
+  </div>`;
+}
+const prioSort=(a,b)=>(a.priority||"P9").localeCompare(b.priority||"P9")||(a.due||"9999").localeCompare(b.due||"9999");
+function renderBacklog(){
+  const tasks=[...STATE.tasks].sort(prioSort);
+  const head=`<div class="quick"><input id="quickAdd" placeholder="${esc(t("quickPh"))}" aria-label="Quick add"><button class="btn primary" id="quickBtn">${t("add")}</button></div>
+  <div class="toolbar"><button class="btn small ${VIEW.backlog==="board"?"primary":""}" data-view="board">${t("viewBoard")}</button><button class="btn small ${VIEW.backlog==="list"?"primary":""}" data-view="list">${t("viewList")}</button><button class="btn small" id="addTask">${t("addTask")}</button></div>`;
+  if(!tasks.length) return head+`<div class="empty">${t("emptyTasks")}</div>`;
+  if(VIEW.backlog==="board"){
+    return head+`<div class="kanban">${Object.entries(COLS).map(([k,l])=>{const col=tasks.filter(x=>x.status===k); return `<div class="col"><h3><span>${t(l)}</span><span class="muted">${col.length}</span></h3>${col.map(taskCard).join("")}</div>`;}).join("")}</div>`;
+  }
+  return head+`<div class="tablewrap"><table class="resp"><thead><tr><th>${t("priority")}</th><th>${t("title")}</th><th>${t("due")}</th><th>${t("mission")}</th><th>${t("status")}</th><th>${t("owner")}</th></tr></thead><tbody>
+  ${tasks.map(x=>{const m=x.mission&&missionById(x.mission); const c=taskClass(x); return `<tr class="row" data-open-task="${x.id}">
+    <td data-l="${t("priority")}"><span class="chip">${esc(x.priority)}</span></td><td data-l="${t("title")}">${esc(x.title)}</td>
+    <td data-l="${t("due")}" style="color:${c==="overdue"?"var(--bad)":c==="soon"?"var(--warn)":"inherit"}">${fmtDate(x.due)||"—"}</td>
+    <td data-l="${t("mission")}">${m?esc(m.acronym||missionName(m)):"—"}</td><td data-l="${t("status")}">${esc(t(COLS[x.status]))}</td><td data-l="${t("owner")}">${esc(x.owner)||"—"}</td></tr>`;}).join("")}
+  </tbody></table></div>`;
+}
+/* Quick add: "P1 Confirmar crachás OEA até 22/10" */
+function matchMission(text){
+  const norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+  const words=norm(text);
+  let best=null,bestLen=0;
+  for(const m of STATE.missions){
+    const cands=[...(m.acronym||"").split("/"),m.name_pt,m.name_en].map(s=>norm(s||"").trim()).filter(s=>s.length>=2);
+    for(const c of cands){
+      const re=new RegExp("(^|[^a-z0-9])"+c.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"($|[^a-z0-9])");
+      if(re.test(words)&&c.length>bestLen){best=m;bestLen=c.length;}
+    }
+  }
+  return best;
+}
+function parseQuick(text){
+  let s=text.trim(), priority="P2", due="";
+  const p=s.match(/(^|\s)(P[1-3])(?=\s|$)/i); if(p){priority=p[2].toUpperCase(); s=s.replace(p[0]," ");}
+  const d=s.match(/\s(?:até|ate|by|due|em|on)?\s*(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)\s*$/i)||s.match(/(?:até|ate|by|due)\s+(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)/i);
+  if(d){due=parseDateLoose(d[1]); s=s.replace(d[0]," ");}
+  const title=s.replace(/\s+/g," ").trim();
+  const m=matchMission(title);
+  return {id:uid(),title,priority,due,mission:m?m.id:"",owner:"",status:"todo",notes:""};
+}
+function taskForm(x){
+  const mopts=STATE.missions.map(m=>`<option value="${m.id}" ${x.mission===m.id?"selected":""}>${esc((m.acronym?m.acronym+" — ":"")+missionName(m))}</option>`).join("");
+  return `<h2 style="margin-top:0">${esc(x.title||t("addTask"))}</h2>
+  <form class="form" id="tForm">
+    <label>${t("title")}<input name="title" value="${esc(x.title)}" required></label>
+    <div class="row2"><label>${t("priority")}<select name="priority">${["P1","P2","P3"].map(p=>`<option ${x.priority===p?"selected":""}>${p}</option>`).join("")}</select></label>
+      <label>${t("due")}<input type="date" name="due" value="${esc(x.due)}"></label></div>
+    <div class="row2"><label>${t("status")}<select name="status">${Object.entries(COLS).map(([k,l])=>`<option value="${k}" ${x.status===k?"selected":""}>${esc(t(l))}</option>`).join("")}</select></label>
+      <label>${t("owner")}<input name="owner" value="${esc(x.owner)}"></label></div>
+    <label>${t("mission")}<select name="mission"><option value="">${t("none")}</option>${mopts}</select></label>
+    <label>${t("notes")}<textarea name="notes">${esc(x.notes)}</textarea></label>
+    <div class="actions"><span><button class="btn primary" type="submit">${t("save")}</button> <button class="btn" type="button" data-close>${t("cancel")}</button></span>
+    ${STATE.tasks.includes(x)?`<button class="btn danger" type="button" id="delTask">${t("del")}</button>`:""}</div>
+  </form>`;
+}
+function openTask(id){
+  const existing=id&&STATE.tasks.find(x=>x.id===id);
+  const x=existing||{id:uid(),title:"",priority:"P2",due:"",mission:"",owner:"",status:"todo",notes:""};
+  openDrawer(taskForm(x));
+  $("#tForm").onsubmit=e=>{e.preventDefault(); const f=new FormData(e.target);
+    ["title","priority","due","status","owner","mission","notes"].forEach(k=>x[k]=(f.get(k)||"").trim());
+    if(!existing) STATE.tasks.push(x); save(); closeDrawer(); render(); snack(t("saved"));};
+  const del=$("#delTask"); if(del) del.onclick=()=>{removeWithUndo("tasks",x); closeDrawer();};
+}
+
+/* ---------- Timeline ---------- */
+function renderTimeline(){
+  const today=todayISO();
+  const ev=[...STATE.timeline].sort((a,b)=>a.date.localeCompare(b.date));
+  return `<div class="card" style="margin-bottom:12px"><form class="form" id="evForm"><div class="row2"><label>${t("date")}<input type="date" name="date" required></label><label>${t("event")}<input name="text" required></label></div><div><button class="btn primary" type="submit">${t("addEvent")}</button></div></form></div>
+  <div class="timeline">${ev.map(e=>`<div class="ev ${e.date<today?"past":""}"><div class="d">${fmtDate(e.date)}${e.date===RUNOFF_ISO?' <span class="chip warn">2º turno</span>':""}</div><div>${esc(e.text)} <button class="btn small danger" data-del-ev="${e.id}" aria-label="${t("del")}">×</button></div></div>`).join("")}</div>`;
+}
+/* ---------- Sources ---------- */
+function renderSources(){
+  return `<div class="card" style="margin-bottom:12px"><form class="form" id="srcForm"><div class="row2"><label>${t("label")}<input name="label" required></label><label>${t("url")}<input type="url" name="url"></label></div><label>${t("tags")}<input name="tags"></label><div><button class="btn primary" type="submit">${t("addSource")}</button></div></form></div>
+  <div class="grid">${STATE.sources.map(s=>`<div class="card" style="padding:10px 14px"><div style="display:flex;justify-content:space-between;gap:8px"><div>${safeUrl(s.url)?`<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.label)}</a>`:esc(s.label)}<div>${(s.tags||"").split(",").map(x=>x.trim()).filter(Boolean).map(x=>`<span class="chip">${esc(x)}</span>`).join("")}</div></div><button class="btn small danger" data-del-src="${s.id}" aria-label="${t("del")}">×</button></div></div>`).join("")}</div>`;
+}
+/* ---------- Reference ---------- */
+function renderRef(){
+  return `<p class="muted">${esc(t("refIntro"))}</p><div class="grid g2 ref">${REF.map(c=>{const x=c[LANG]; return `<div class="card"><h3>${esc(x.h)}</h3><ul>${x.li.map(l=>`<li>${esc(l)}</li>`).join("")}</ul><div class="src">${LANG==="pt"?"Fonte: Guia Prático 2026":"Source: Practical Guide 2026"}, ${c.s}</div></div>`;}).join("")}</div>`;
+}
+
+/* ================= drawer, snack, undo ================= */
+function openDrawer(html){ $("#drawer").innerHTML=html; $("#drawer").classList.add("open"); $("#drawerBg").classList.add("open"); const f=$("#drawer input"); if(f) setTimeout(()=>f.focus(),50); }
+function closeDrawer(){ $("#drawer").classList.remove("open"); $("#drawerBg").classList.remove("open"); }
+let snackTimer=null, undoFn=null;
+function snack(msg,undo){
+  $("#snackMsg").textContent=msg; undoFn=undo||null;
+  $("#snackUndo").textContent=t("undo"); $("#snackUndo").style.display=undo?"inline":"none";
+  $("#snack").classList.add("show"); clearTimeout(snackTimer); snackTimer=setTimeout(()=>{$("#snack").classList.remove("show"); undoFn=null;},8000);
+}
+function removeWithUndo(coll,item){
+  const arr=STATE[coll], i=arr.indexOf(item); if(i<0) return;
+  arr.splice(i,1);
+  const unlinked = coll==="missions" ? STATE.tasks.filter(x=>x.mission===item.id) : [];
+  unlinked.forEach(x=>x.mission="");
+  save(); render();
+  snack(t("deleted"),()=>{ arr.splice(Math.min(i,arr.length),0,item); unlinked.forEach(x=>x.mission=item.id); save(); render(); });
+}
+
+/* ================= settings ================= */
+function openSettings(){
+  openDrawer(`<h2 style="margin-top:0">${t("settings")}</h2>
+  <div class="notice">${esc(t("privacy"))}</div>
+  <div class="card" style="margin-bottom:12px"><h3>Backup</h3><div class="toolbar" style="margin:0"><button class="btn" id="expBtn">${t("exportJ")}</button><button class="btn" id="impBtn">${t("importJ")}</button></div></div>
+  <div class="card" style="margin-bottom:12px"><h3>${t("passTitle")}</h3><p class="muted" style="font-size:13px">${esc(t("passHelp"))}</p>
+    <div class="toolbar" style="margin:0"><button class="btn" id="setPassBtn">${t("setPass")}</button>${PASSKEY?`<button class="btn" id="rmPassBtn">${t("removePass")}</button><button class="btn" id="lockBtn">${t("lockNow")}</button>`:""}</div></div>
+  <div class="card"><button class="btn danger" id="resetBtn">${t("resetSeed")}</button></div>
+  <div class="actions"><button class="btn" data-close>${t("cancel")}</button></div>`);
+  $("#expBtn").onclick=exportJSON;
+  $("#impBtn").onclick=()=>$("#importFile").click();
+  $("#setPassBtn").onclick=async()=>{ const p=prompt(t("passPrompt")); if(p==null) return; if(p.length<8){alert(t("passShort"));return;}
+    PASSSALT=crypto.getRandomValues(new Uint8Array(16)); PASSKEY=await deriveKey(p,PASSSALT); await saveNow(); closeDrawer(); snack(t("passSet")); };
+  const rm=$("#rmPassBtn"); if(rm) rm.onclick=async()=>{ PASSKEY=null; PASSSALT=null; await saveNow(); closeDrawer(); snack(t("passRemoved")); };
+  const lk=$("#lockBtn"); if(lk) lk.onclick=async()=>{ await saveNow(); PASSKEY=null; STATE=null; closeDrawer(); $("#main").innerHTML=""; showLock(); };
+  $("#resetBtn").onclick=()=>{ if(confirm(t("resetConfirm"))){ STATE=seed(); save(); closeDrawer(); render(); } };
+}
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(STATE,null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`missoes-2026-backup-${todayISO()}.json`;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500);
+}
+function validState(o){ return o&&typeof o==="object"&&Array.isArray(o.missions)&&Array.isArray(o.tasks)&&Array.isArray(o.timeline)&&Array.isArray(o.sources); }
+$("#importFile").onchange=async e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  try{ const o=JSON.parse(await f.text()); if(!validState(o)) throw 0; STATE=o; save(); closeDrawer(); render(); snack(t("imported")); }
+  catch(_){ alert(t("importErr")); }
+};
+
+/* ================= lock ================= */
+function showLock(){ applyStatic(); $("#lock").classList.add("show"); $("#lockErr").textContent=""; $("#lockPass").value=""; setTimeout(()=>$("#lockPass").focus(),50); }
+async function tryUnlock(){
+  try{ const blob=JSON.parse(rawGet(KEY)); STATE=await decryptBlob(blob,$("#lockPass").value); $("#lock").classList.remove("show"); render(); }
+  catch(e){ $("#lockErr").textContent=t("wrongPass"); }
+}
+$("#unlockBtn").onclick=tryUnlock;
+$("#lockPass").onkeydown=e=>{ if(e.key==="Enter") tryUnlock(); };
+
+/* ================= events ================= */
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-tab],[data-open-mission],[data-open-task],[data-move],[data-view],[data-close],[data-sort],[data-del-ev],[data-del-src]");
+  if(!el) return;
+  if(el.dataset.tab){ VIEW.tab=el.dataset.tab; render(); window.scrollTo(0,0); return; }
+  if(el.dataset.move){ e.stopPropagation(); const x=STATE.tasks.find(t=>t.id===el.dataset.move); if(x){x.status=el.dataset.to; save(); render();} return; }
+  if(el.dataset.openMission){ e.preventDefault(); openMission(el.dataset.openMission); return; }
+  if(el.dataset.openTask){ e.preventDefault(); openTask(el.dataset.openTask); return; }
+  if(el.dataset.view){ VIEW.backlog=el.dataset.view; savePrefs(); render(); return; }
+  if(el.hasAttribute("data-close")){ closeDrawer(); return; }
+  if(el.dataset.sort){ VIEW.dir = VIEW.sort===el.dataset.sort ? -VIEW.dir : 1; VIEW.sort=el.dataset.sort; render(); return; }
+  if(el.dataset.delEv){ const x=STATE.timeline.find(v=>v.id===el.dataset.delEv); if(x) removeWithUndo("timeline",x); return; }
+  if(el.dataset.delSrc){ const x=STATE.sources.find(v=>v.id===el.dataset.delSrc); if(x) removeWithUndo("sources",x); return; }
+});
+document.addEventListener("click",e=>{
+  if(e.target.id==="addMission") openMission(null);
+  if(e.target.id==="addTask") openTask(null);
+  if(e.target.id==="quickBtn") quickAdd();
+});
+function quickAdd(){ const i=$("#quickAdd"); if(!i||!i.value.trim()) return; const x=parseQuick(i.value); if(!x.title) return; STATE.tasks.push(x); save(); render(); setTimeout(()=>$("#quickAdd")&&$("#quickAdd").focus(),0); snack(t("saved"),()=>{ STATE.tasks=STATE.tasks.filter(v=>v!==x); save(); render(); }); }
+document.addEventListener("keydown",e=>{ if(e.target.id==="quickAdd"&&e.key==="Enter") quickAdd(); if(e.key==="Escape") closeDrawer(); });
+document.addEventListener("input",e=>{
+  if(e.target.id==="mq"){ VIEW.q=e.target.value; const pos=e.target.selectionStart; render(); const n=$("#mq"); n.focus(); n.setSelectionRange(pos,pos); }
+});
+document.addEventListener("change",e=>{
+  if(e.target.id==="mtype"){ VIEW.ftype=e.target.value; render(); }
+  if(e.target.id==="mstatus"){ VIEW.fstatus=e.target.value; render(); }
+});
+document.addEventListener("submit",e=>{
+  if(e.target.id==="evForm"){ e.preventDefault(); const f=new FormData(e.target); STATE.timeline.push({id:uid(),date:f.get("date"),text:f.get("text").trim()}); save(); render(); }
+  if(e.target.id==="srcForm"){ e.preventDefault(); const f=new FormData(e.target); STATE.sources.push({id:uid(),label:f.get("label").trim(),url:(f.get("url")||"").trim(),tags:(f.get("tags")||"").trim()}); save(); render(); }
+});
+$("#drawerBg").onclick=closeDrawer;
+$("#snackUndo").onclick=()=>{ if(undoFn){ const f=undoFn; undoFn=null; f(); } $("#snack").classList.remove("show"); };
+$("#langBtn").onclick=()=>{ LANG=LANG==="pt"?"en":"pt"; savePrefs(); STATE?render():applyStatic(); };
+$("#themeBtn").onclick=()=>{ const r=document.documentElement; const dark=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches; r.dataset.theme=dark?"light":"dark"; savePrefs(); };
+$("#settingsBtn").onclick=()=>{ if(STATE) openSettings(); };
+setInterval(()=>{ const cd=$("#cd"); if(cd) cd.textContent=countdownText(); },30000);
+
+/* ================= boot ================= */
+(function boot(){
+  loadPrefs();
+  const raw=rawGet(KEY);
+  if(raw){
+    try{ const o=JSON.parse(raw); if(o&&o.enc){ showLock(); return; } if(validState(o)){ STATE=o; render(); return; } }catch(e){}
+  }
+  STATE=seed(); save(); render();
+})();
+</script>
+</body>
+</html>
