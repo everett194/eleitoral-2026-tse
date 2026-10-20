@@ -140,6 +140,7 @@ a{color:var(--accent)}
 </div>
 <input type="file" id="importFile" accept="application/json,.json" hidden>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 "use strict";
 /* ================= i18n ================= */
@@ -165,6 +166,9 @@ const I18N = {
     date:"Data",event:"Evento",addEvent:"+ Evento",label:"Rótulo",url:"URL",tags:"Tags",addSource:"+ Fonte",
     deleted:"Excluído.",undo:"Desfazer",saved:"Salvo.",
     exportJ:"Exportar JSON",importJ:"Importar JSON",imported:"Importado.",importErr:"Arquivo inválido.",
+    copyJ:"Copiar JSON",copied:"Copiado para a área de transferência.",copyErr:"Não foi possível copiar. Selecione e copie manualmente.",
+    pasteJ:"Colar JSON",pasteJTitle:"Importar via texto",pasteJPh:"Cole aqui o JSON exportado pelo seu colega…",pasteJBtn:"Importar",
+    shareHelp:"Para compartilhar com seu colega: clique em “Copiar JSON”, envie o texto (WhatsApp, e-mail etc.), e peça para ele colar aqui com “Colar JSON”. Isso substitui os dados atuais — exporte um backup antes se quiser manter algo.",
     privacy:"Não listado ≠ privado. Não armazene informações não públicas do TSE nem dados pessoais (passaportes, telefones, endereços, documentos de viagem).",
     passTitle:"Senha (criptografia local)",passHelp:"Criptografa os dados neste navegador (AES-GCM). Se esquecer a senha, os dados não podem ser recuperados — exporte um backup antes.",
     setPass:"Definir/alterar senha",removePass:"Remover senha",lockNow:"Bloquear agora",passSet:"Senha definida.",passRemoved:"Senha removida.",
@@ -197,6 +201,9 @@ const I18N = {
     date:"Date",event:"Event",addEvent:"+ Event",label:"Label",url:"URL",tags:"Tags",addSource:"+ Source",
     deleted:"Deleted.",undo:"Undo",saved:"Saved.",
     exportJ:"Export JSON",importJ:"Import JSON",imported:"Imported.",importErr:"Invalid file.",
+    copyJ:"Copy JSON",copied:"Copied to clipboard.",copyErr:"Couldn't copy. Select and copy manually.",
+    pasteJ:"Paste JSON",pasteJTitle:"Import from text",pasteJPh:"Paste the JSON your friend exported…",pasteJBtn:"Import",
+    shareHelp:"To share with your friend: click “Copy JSON”, send them the text (WhatsApp, email, etc.), and have them paste it here with “Paste JSON”. This replaces the current data — export a backup first if you want to keep anything.",
     privacy:"Unlisted ≠ private. Do not store non-public TSE information or personal data (passports, phones, addresses, travel documents).",
     passTitle:"Passphrase (local encryption)",passHelp:"Encrypts data in this browser (AES-GCM). If you forget it, the data cannot be recovered — export a backup first.",
     setPass:"Set/change passphrase",removePass:"Remove passphrase",lockNow:"Lock now",passSet:"Passphrase set.",passRemoved:"Passphrase removed.",
@@ -318,6 +325,31 @@ const REF = [
    en:{h:"TSE and Electoral Justice",li:["President: Justice Nunes Marques; VP: Justice André Mendonça","Composition: 3 STF justices, 2 STJ justices, 2 attorneys","Regional courts (TREs) in each capital and DF; >2,641 electoral judges","TSE proclaims President/VP; TREs proclaim other offices"]},s:"§4, §8"}
 ];
 
+/* ================= cloud sync (Supabase) ================= */
+const SUPABASE_URL = "https://ryzudqtxohuhwjtjesuk.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_iPMXV2WupzIh2zed7qnPTA_WSEZ5t0W";
+const CLOUD_TABLE = "datalogs-missoes";
+const CLOUD_ROW_ID = 1;
+const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+let CLOUD_OK = true;
+async function cloudLoad(){
+  if(!sb) return null;
+  try{
+    const {data,error} = await sb.from(CLOUD_TABLE).select("data").eq("id",CLOUD_ROW_ID).maybeSingle();
+    if(error) throw error;
+    CLOUD_OK = true;
+    return data ? data.data : null;
+  }catch(e){ CLOUD_OK = false; return null; }
+}
+async function cloudSave(payload){
+  if(!sb) return;
+  try{
+    const {error} = await sb.from(CLOUD_TABLE).upsert({id:CLOUD_ROW_ID, data:payload});
+    if(error) throw error;
+    CLOUD_OK = true;
+  }catch(e){ CLOUD_OK = false; }
+}
+
 /* ================= storage & crypto ================= */
 const KEY = "moe26-tracker";
 let STATE = null, PASSKEY = null, PASSSALT = null, STORAGE_OK = true;
@@ -347,6 +379,7 @@ async function saveNow(){
   if(!STATE) return;
   const payload = PASSKEY ? await encryptObj(STATE) : STATE;
   rawSet(KEY,JSON.stringify(payload));
+  cloudSave(payload);
 }
 function loadPrefs(){
   try{ const p=JSON.parse(rawGet(KEY+"-prefs")||"{}"); if(p.lang) LANG=p.lang; if(p.theme) document.documentElement.dataset.theme=p.theme; if(p.view) VIEW.backlog=p.view; }catch(e){}
@@ -610,13 +643,23 @@ function removeWithUndo(coll,item){
 function openSettings(){
   openDrawer(`<h2 style="margin-top:0">${t("settings")}</h2>
   <div class="notice">${esc(t("privacy"))}</div>
-  <div class="card" style="margin-bottom:12px"><h3>Backup</h3><div class="toolbar" style="margin:0"><button class="btn" id="expBtn">${t("exportJ")}</button><button class="btn" id="impBtn">${t("importJ")}</button></div></div>
+  <div class="card" style="margin-bottom:12px"><h3>Backup</h3>
+    <p class="muted" style="font-size:13px">${esc(t("shareHelp"))}</p>
+    <div class="toolbar" style="margin:0">
+      <button class="btn primary" id="copyBtn">${t("copyJ")}</button>
+      <button class="btn primary" id="pasteBtn">${t("pasteJ")}</button>
+      <button class="btn" id="expBtn">${t("exportJ")}</button>
+      <button class="btn" id="impBtn">${t("importJ")}</button>
+    </div>
+  </div>
   <div class="card" style="margin-bottom:12px"><h3>${t("passTitle")}</h3><p class="muted" style="font-size:13px">${esc(t("passHelp"))}</p>
     <div class="toolbar" style="margin:0"><button class="btn" id="setPassBtn">${t("setPass")}</button>${PASSKEY?`<button class="btn" id="rmPassBtn">${t("removePass")}</button><button class="btn" id="lockBtn">${t("lockNow")}</button>`:""}</div></div>
   <div class="card"><button class="btn danger" id="resetBtn">${t("resetSeed")}</button></div>
   <div class="actions"><button class="btn" data-close>${t("cancel")}</button></div>`);
   $("#expBtn").onclick=exportJSON;
   $("#impBtn").onclick=()=>$("#importFile").click();
+  $("#copyBtn").onclick=copyJSON;
+  $("#pasteBtn").onclick=openPasteImport;
   $("#setPassBtn").onclick=async()=>{ const p=prompt(t("passPrompt")); if(p==null) return; if(p.length<8){alert(t("passShort"));return;}
     PASSSALT=crypto.getRandomValues(new Uint8Array(16)); PASSKEY=await deriveKey(p,PASSSALT); await saveNow(); closeDrawer(); snack(t("passSet")); };
   const rm=$("#rmPassBtn"); if(rm) rm.onclick=async()=>{ PASSKEY=null; PASSSALT=null; await saveNow(); closeDrawer(); snack(t("passRemoved")); };
@@ -634,6 +677,26 @@ $("#importFile").onchange=async e=>{
   try{ const o=JSON.parse(await f.text()); if(!validState(o)) throw 0; STATE=o; save(); closeDrawer(); render(); snack(t("imported")); }
   catch(_){ alert(t("importErr")); }
 };
+async function copyJSON(){
+  const text = JSON.stringify(STATE,null,2);
+  try{ await navigator.clipboard.writeText(text); snack(t("copied")); }
+  catch(_){
+    openDrawer(`<h2 style="margin-top:0">${t("copyJ")}</h2><div class="form"><textarea rows="16" readonly onclick="this.select()">${esc(text)}</textarea><div class="actions"><button class="btn" type="button" data-close>${t("cancel")}</button></div></div>`);
+    const ta=$("#drawer textarea"); if(ta) ta.select();
+  }
+}
+function openPasteImport(){
+  openDrawer(`<h2 style="margin-top:0">${t("pasteJTitle")}</h2>
+  <form class="form" id="pasteForm">
+    <textarea name="data" rows="16" placeholder="${esc(t("pasteJPh"))}" required></textarea>
+    <div class="actions"><span><button class="btn primary" type="submit">${t("pasteJBtn")}</button> <button class="btn" type="button" data-close>${t("cancel")}</button></span></div>
+  </form>`);
+  $("#pasteForm").onsubmit=e=>{
+    e.preventDefault();
+    try{ const o=JSON.parse(new FormData(e.target).get("data")); if(!validState(o)) throw 0; STATE=o; save(); closeDrawer(); render(); snack(t("imported")); }
+    catch(_){ alert(t("importErr")); }
+  };
+}
 
 /* ================= lock ================= */
 function showLock(){ applyStatic(); $("#lock").classList.add("show"); $("#lockErr").textContent=""; $("#lockPass").value=""; setTimeout(()=>$("#lockPass").focus(),50); }
@@ -684,11 +747,16 @@ $("#settingsBtn").onclick=()=>{ if(STATE) openSettings(); };
 setInterval(()=>{ const cd=$("#cd"); if(cd) cd.textContent=countdownText(); },30000);
 
 /* ================= boot ================= */
-(function boot(){
+(async function boot(){
   loadPrefs();
+  const cloud = await cloudLoad();
+  if(cloud){
+    if(cloud.enc){ rawSet(KEY,JSON.stringify(cloud)); showLock(); return; }
+    if(validState(cloud)){ STATE=cloud; rawSet(KEY,JSON.stringify(cloud)); render(); return; }
+  }
   const raw=rawGet(KEY);
   if(raw){
-    try{ const o=JSON.parse(raw); if(o&&o.enc){ showLock(); return; } if(validState(o)){ STATE=o; render(); return; } }catch(e){}
+    try{ const o=JSON.parse(raw); if(o&&o.enc){ showLock(); return; } if(validState(o)){ STATE=o; save(); render(); return; } }catch(e){}
   }
   STATE=seed(); save(); render();
 })();
